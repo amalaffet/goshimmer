@@ -1,0 +1,11 @@
+{
+	"WebAPI": "http://127.0.0.1:8080",
+	"basicAuth": {
+	  "enabled": false,
+	  "username": "goshimmer",
+	  "password": "goshimmer"
+	},
+	"reuse_addresses": true,
+	"faucetPowDifficulty": 25,
+	"assetRegistryNetwork": "nectar"
+}

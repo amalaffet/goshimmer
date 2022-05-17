@@ -1,0 +1,96 @@
+# Documentation at http://goreleaser.com
+
+# Project name
+project_name: GoShimmer
+
+# Environment variables
+env:
+  - GO111MODULE=on
+
+# Builds
+builds:
+  # GoShimmer AMD64 all OS
+  - id: goshimmer
+    binary: goshimmer
+    flags:
+      - -tags=rocksdb,builtin_static,netgo
+    ldflags:
+      - -s -w -X github.com/iotaledger/goshimmer/plugins/banner.AppVersion={{.Version}}
+    goos:
+      - linux
+    goarch:
+      - amd64
+
+  # cli-wallet AMD64 all OS
+  - id: cli-wallet
+    dir: ./tools/cli-wallet
+    binary: cli-wallet
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+
+# Archives
+archives:
+  # GoShimmer with config and snapshot
+  - id: goshimmer
+    builds:
+      - goshimmer
+    name_template: "goshimmer-{{.Version}}_{{.Os}}_{{.Arch}}"
+    replacements:
+      amd64: x86_64
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - config.json
+      - snapshot.bin
+
+  # cli-wallet
+  - id: cli-wallet
+    builds:
+      - cli-wallet
+    name_template: "cli-wallet-{{.Version}}_{{.Os}}_{{.Arch}}"
+    replacements:
+      amd64: x86_64
+      arm: ARM
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+
+# Checksum
+checksum:
+  name_template: "checksums.txt"
+
+# Snapshot
+snapshot:
+  name_template: "{{ .Tag }}"
+
+# Changelog
+changelog:
+  skip: true
+
+# Release
+release:
+  prerelease: auto
+  name_template: "{{.ProjectName}}-{{.Version}}"
+  github:
+    owner: iotaledger
+    name: goshimmer

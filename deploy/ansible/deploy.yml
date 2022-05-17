@@ -1,0 +1,31 @@
+---
+## This playbook deploys new changes to the environment.
+
+- hosts: metrics
+  vars:
+    removeData: no
+  roles:
+    - metrics
+
+- hosts: supports
+  roles:
+    - role: goshimmer-node
+      nodeType: entrynode
+    - role: goshimmer-node
+      nodeType: analysis-server
+
+- hosts: goshimmers:&internal_nodes
+  vars:
+    nodeType: goshimmer
+  roles:
+    - goshimmer-node
+
+- hosts: goshimmers:&public_nodes
+  vars:
+    nodeType: public-node
+  roles:
+    - goshimmer-node
+
+- hosts: vanilla-01*
+  roles:
+    - snapshotter

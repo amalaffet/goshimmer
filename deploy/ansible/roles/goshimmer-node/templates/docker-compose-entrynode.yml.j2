@@ -1,0 +1,30 @@
+#jinja2: trim_blocks:True, lstrip_blocks:True
+version: "3"
+
+services:
+  entrynode:
+    image: {{goshimmerDockerImage}}:{{goshimmerDockerTag}}
+    container_name: entrynode
+    restart: unless-stopped
+    volumes:
+      - "./db:/db"
+      - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      - "0.0.0.0:6060:6060/tcp"
+      - "0.0.0.0:15626:15626/udp"
+    environment:
+      - DATABASE_DIRECTORY=/db/mainnetdb
+      - NODE_PEERDBDIRECTORY=/db/peerdb
+      - NODE_SEED={{ entryNodeSeed }}
+      - PROFILING_BINDADDRESS=0.0.0.0:6060
+    command: >
+      --skip-config=true
+      --node.overwriteStoredSeed=true
+      --autoPeering.bindAddress=0.0.0.0:15626
+      {% if networkVersion|default(None) %}
+      --autoPeering.networkVersion={{ networkVersion }}
+      {% endif %}
+      --autoPeering.entryNodes=
+      --analysis.client.serverAddress=
+      --node.disablePlugins=activity,analysisClient,chat,consensus,dashboard,drng,faucet,fpc,gossip,firewall,issuer,mana,manarefresher,manualpeering,messageLayer,metrics,networkdelay,portcheck,pow,syncBeaconFollower,webAPIBroadcastDataEndpoint,WebAPIDataEndpoint,WebAPIHealthzEndpoint,WebAPIDRNGEndpoint,WebAPIFaucetEndpoint,webAPIFindTransactionHashesEndpoint,webAPIGetNeighborsEndpoint,webAPIGetTransactionObjectsByHashEndpoint,webAPIGetTransactionTrytesByHashEndpoint,WebAPIInfoEndpoint,WebAPILedgerstateEndpoint,WebAPIMessageEndpoint,WebAPIToolsDRNGEndpoint,WebAPIToolsMessageEndpoint,WebAPIWeightProviderEndpoint,remotelog,remotelogmetrics,DAGsVisualizer
+      --logger.level={{ logLevel }}
